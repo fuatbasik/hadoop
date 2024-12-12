@@ -36,6 +36,7 @@ import static org.apache.hadoop.fs.contract.ContractTestUtils.skip;
 import static org.apache.hadoop.fs.contract.ContractTestUtils.verifyFileContents;
 import static org.apache.hadoop.fs.contract.ContractTestUtils.writeDataset;
 import static org.apache.hadoop.fs.s3a.S3ATestConstants.S3A_TEST_TIMEOUT;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 
 /**
  * S3A contract tests covering rename.
@@ -45,6 +46,12 @@ public class ITestS3AContractRename extends AbstractContractRenameTest {
   public static final Logger LOG = LoggerFactory.getLogger(
       ITestS3AContractRename.class);
 
+  @Override
+  public void setup() throws Exception {
+    super.setup();
+    skipIfAnalyticsAcceleratorEnabled(getContract().getConf());
+
+  }
   @Override
   protected int getTestTimeoutMillis() {
     return S3A_TEST_TIMEOUT;

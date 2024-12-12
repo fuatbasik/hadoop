@@ -27,6 +27,7 @@ import org.apache.hadoop.fs.contract.AbstractFSContract;
 import org.apache.hadoop.fs.contract.s3a.S3AContract;
 import org.apache.hadoop.fs.statistics.StreamStatisticNames;
 
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.statistics.StreamStatisticNames.*;
 
 /**
@@ -76,6 +77,12 @@ public class ITestS3AContractStreamIOStatistics extends
     return Arrays.asList(STREAM_WRITE_BYTES,
         STREAM_WRITE_BLOCK_UPLOADS,
         STREAM_WRITE_EXCEPTIONS);
+  }
+
+  @Override
+  public void setup() throws Exception {
+    super.setup();
+    skipIfAnalyticsAcceleratorEnabled(getContract().getConf());
   }
 
 }

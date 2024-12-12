@@ -61,6 +61,7 @@ import static org.apache.hadoop.fs.Options.OpenFileOptions.FS_OPTION_OPENFILE_RE
 import static org.apache.hadoop.fs.contract.ContractTestUtils.range;
 import static org.apache.hadoop.fs.contract.ContractTestUtils.returnBuffersToPoolPostRead;
 import static org.apache.hadoop.fs.contract.ContractTestUtils.validateVectoredReadResult;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.verifyStatisticCounterValue;
 import static org.apache.hadoop.fs.statistics.IOStatisticsLogging.ioStatisticsToPrettyString;
 import static org.apache.hadoop.test.LambdaTestUtils.interceptFuture;
@@ -82,6 +83,16 @@ public class ITestS3AContractVectoredRead extends AbstractContractVectoredReadTe
   @Override
   protected AbstractFSContract createContract(Configuration conf) {
     return new S3AContract(conf);
+  }
+
+  /**
+   * Analytics Accelerator Library for Amazon S3 does not support Vectored Reads
+   * @throws Exception
+   */
+  @Override
+  public void setup() throws Exception {
+    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
+    super.setup();
   }
 
   /**

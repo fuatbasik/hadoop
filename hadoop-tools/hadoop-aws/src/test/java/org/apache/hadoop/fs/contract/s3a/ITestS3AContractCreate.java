@@ -30,8 +30,7 @@ import org.apache.hadoop.fs.contract.AbstractFSContract;
 import org.apache.hadoop.fs.s3a.S3ATestUtils;
 
 import static org.apache.hadoop.fs.s3a.Constants.CONNECTION_EXPECT_CONTINUE;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBaseAndBucketOverrides;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.setPerformanceFlags;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.*;
 
 /**
  * S3A contract tests creating files.
@@ -86,6 +85,13 @@ public class ITestS3AContractCreate extends AbstractContractCreateTest {
     conf.setBoolean(CONNECTION_EXPECT_CONTINUE, expectContinue);
     S3ATestUtils.disableFilesystemCaching(conf);
     return conf;
+  }
+
+  @Override
+  public void testOverwriteExistingFile() throws Throwable {
+    super.testOverwriteExistingFile();
+    skipIfAnalyticsAcceleratorEnabled(this.createConfiguration());
+
   }
 
   @Override

@@ -19,9 +19,11 @@
 
 package org.apache.hadoop.fs.s3a;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 import org.apache.hadoop.fs.FSExceptionMessages;
+import org.apache.hadoop.fs.StreamCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,7 @@ import software.amazon.s3.analyticsaccelerator.S3SeekableInputStream;
 import software.amazon.s3.analyticsaccelerator.S3SeekableInputStreamFactory;
 import software.amazon.s3.analyticsaccelerator.util.S3URI;
 
-public class S3ASeekableStream extends FSInputStream {
+public class S3ASeekableStream extends FSInputStream implements StreamCapabilities {
 
     private S3SeekableInputStream inputStream;
     private long lastReadCurrentPos = 0;
@@ -44,6 +46,17 @@ public class S3ASeekableStream extends FSInputStream {
         this.key = key;
     }
 
+    /**
+     * Indicates whether the given {@code capability} is supported by this stream.
+     *
+     * @param capability the capability to check.
+     * @return true if the given {@code capability} is supported by this stream, false otherwise.
+     */
+    @Override
+    public boolean hasCapability(String capability) {
+        return false;
+    }
+
     @Override
     public int read() throws IOException {
         throwIfClosed();
@@ -53,6 +66,10 @@ public class S3ASeekableStream extends FSInputStream {
     @Override
     public void seek(long pos) throws IOException {
         throwIfClosed();
+        if (pos < 0) {
+            throw new EOFException(FSExceptionMessages.NEGATIVE_SEEK
+                    + " " + pos);
+        }
         inputStream.seek(pos);
     }
 
@@ -90,6 +107,12 @@ public class S3ASeekableStream extends FSInputStream {
     @Override
     public boolean seekToNewSource(long l) throws IOException {
         return false;
+    }
+
+    @Override
+    public int available() throws IOException {
+        throwIfClosed();
+        return super.available();
     }
 
     @Override

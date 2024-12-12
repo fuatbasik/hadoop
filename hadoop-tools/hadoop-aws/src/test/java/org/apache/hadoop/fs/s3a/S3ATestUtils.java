@@ -575,6 +575,20 @@ public final class S3ATestUtils {
   }
 
   /**
+   * Skip a test if the Analytics Accelerator Library for Amazon S3 is enabled.
+   * @param configuration configuration to probe
+   */
+  public static void skipIfAnalyticsAcceleratorEnabled(
+          Configuration configuration) {
+    assume("Skipping test as Analytics Accelerator Library does not support this functionality",
+            !isAnalyticsAcceleratorEnabled(configuration));
+  }
+
+  public static boolean isAnalyticsAcceleratorEnabled(final Configuration conf) {
+    return conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
+  }
+
+  /**
    * Skip a test if the filesystem lacks a required capability.
    * @param fs filesystem
    * @param capability capability
