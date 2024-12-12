@@ -32,9 +32,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptID;
 import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 
 import static org.apache.hadoop.fs.s3a.Constants.MULTIPART_UPLOADS_ENABLED;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.disableFilesystemCaching;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.getTestBucketName;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBucketOverrides;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.*;
 import static org.apache.hadoop.fs.s3a.commit.CommitConstants.FS_S3A_COMMITTER_NAME;
 import static org.apache.hadoop.fs.s3a.commit.CommitConstants.S3A_COMMITTER_FACTORY_KEY;
 import static org.apache.hadoop.test.LambdaTestUtils.intercept;
@@ -44,6 +42,13 @@ import static org.apache.hadoop.test.LambdaTestUtils.intercept;
  * uploads.
  */
 public class ITestStagingCommitProtocolFailure extends AbstractS3ATestBase {
+
+
+  @Override
+  public void setup() throws Exception {
+    super.setup();
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+  }
 
   @Override
   protected Configuration createConfiguration() {

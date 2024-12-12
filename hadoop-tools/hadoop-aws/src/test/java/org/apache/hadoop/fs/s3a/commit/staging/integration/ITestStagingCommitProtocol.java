@@ -41,6 +41,7 @@ import org.apache.hadoop.mapreduce.JobID;
 import org.apache.hadoop.mapreduce.JobStatus;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.s3a.commit.CommitConstants.*;
 
 /** Test the staging committer's handling of the base protocol operations. */
@@ -65,6 +66,8 @@ public class ITestStagingCommitProtocol extends AbstractITCommitProtocol {
   @Override
   public void setup() throws Exception {
     super.setup();
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+
 
     // identify working dir for staging and delete
     Configuration conf = getConfiguration();
