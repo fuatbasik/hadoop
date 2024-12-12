@@ -36,6 +36,7 @@ import org.apache.hadoop.test.LambdaTestUtils;
 
 import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_BLOCK_SIZE_KEY;
 import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_ENABLED_KEY;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.assertThatStatisticMaximum;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.verifyStatisticCounterValue;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.verifyStatisticGaugeValue;
@@ -74,6 +75,12 @@ public class ITestS3APrefetchingInputStream extends AbstractS3ACostTest {
   private static final int TIMEOUT_MILLIS = 5000;
   private static final int INTERVAL_MILLIS = 500;
   private static final int BLOCK_SIZE = S_1K * 10;
+
+  @Override
+  public void setup() throws Exception {
+    super.setup();
+    skipIfAnalyticsAcceleratorEnabled(this.createConfiguration());
+  }
 
   @Override
   public Configuration createConfiguration() {
