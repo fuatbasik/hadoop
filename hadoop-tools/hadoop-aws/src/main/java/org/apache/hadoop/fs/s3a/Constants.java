@@ -1784,4 +1784,10 @@ public final class Constants {
    */
   public static final boolean ANALYTICS_ACCELERATOR_ENABLED_DEFAULT = false;
 
+  /**
+   * Default value for {@link #USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR }
+   * Value {@value}.
+   */
+  public static final boolean USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR_DEFAULT = true;
+
 }
