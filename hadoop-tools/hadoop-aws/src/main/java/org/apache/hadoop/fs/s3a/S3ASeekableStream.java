@@ -126,7 +126,7 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
 
     protected void throwIfClosed() throws IOException {
         if (isClosed()) {
-            throw new IOException(FSExceptionMessages.STREAM_IS_CLOSED);
+            throw new IOException(key + ": " + FSExceptionMessages.STREAM_IS_CLOSED);
         }
     }
 
