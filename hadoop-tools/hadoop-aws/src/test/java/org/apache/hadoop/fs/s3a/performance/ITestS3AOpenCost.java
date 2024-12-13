@@ -54,10 +54,7 @@ import static org.apache.hadoop.fs.contract.ContractTestUtils.writeTextFile;
 import static org.apache.hadoop.fs.s3a.Constants.CHECKSUM_VALIDATION;
 import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_ENABLED_DEFAULT;
 import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_ENABLED_KEY;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.assertStreamIsNotChecksummed;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.disableFilesystemCaching;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.getS3AInputStream;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBaseAndBucketOverrides;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.*;
 import static org.apache.hadoop.fs.s3a.Statistic.STREAM_READ_BYTES_READ_CLOSE;
 import static org.apache.hadoop.fs.s3a.Statistic.STREAM_READ_OPENED;
 import static org.apache.hadoop.fs.s3a.Statistic.STREAM_READ_SEEK_BYTES_SKIPPED;
@@ -114,6 +111,7 @@ public class ITestS3AOpenCost extends AbstractS3ACostTest {
   @Override
   public void setup() throws Exception {
     super.setup();
+    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
     S3AFileSystem fs = getFileSystem();
     testFile = methodPath();
 
@@ -392,7 +390,6 @@ public class ITestS3AOpenCost extends AbstractS3ACostTest {
 
     describe("PositionedReadable.read() past the end of the file");
     assumeNoPrefetching();
-
     verifyMetrics(() -> {
       try (FSDataInputStream in =
                openFile(longLen, FS_OPTION_OPENFILE_READ_POLICY_RANDOM)) {
