@@ -47,6 +47,7 @@ import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl;
 import org.apache.hadoop.security.UserGroupInformation;
 
 import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBaseAndBucketOverrides;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.s3a.commit.CommitConstants.*;
 import static org.apache.hadoop.fs.s3a.commit.InternalCommitterConstants.COMMITTER_NAME_STAGING;
 import static org.apache.hadoop.test.LambdaTestUtils.intercept;
@@ -182,6 +183,7 @@ public final class ITestS3ACommitterFactory extends AbstractCommitITest {
     // destroy all filesystems from previous runs.
     FileSystem.closeAllForUGI(UserGroupInformation.getCurrentUser());
     super.setup();
+    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
     jobId = randomJobId();
     attempt0 = "attempt_" + jobId + "_m_000000_0";
     taskAttempt0 = TaskAttemptID.forName(attempt0);

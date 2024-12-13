@@ -30,7 +30,7 @@ import org.apache.hadoop.fs.Path;
 
 import static org.apache.hadoop.fs.s3a.Constants.ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX;
 import static org.apache.hadoop.fs.s3a.Constants.ANALYTICS_ACCELERATOR_ENABLED_KEY;
-import static org.apache.hadoop.fs.s3a.Constants.USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR;
+import static org.apache.hadoop.fs.s3a.Constants.ANALYTICS_ACCELERATOR_CRT_ENABLED;
 import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBaseAndBucketOverrides;
 
 import software.amazon.s3.analyticsaccelerator.S3SeekableInputStreamConfiguration;
@@ -48,7 +48,7 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
         Configuration conf = getConfiguration();
         removeBaseAndBucketOverrides(conf, ANALYTICS_ACCELERATOR_ENABLED_KEY);
         conf.setBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, true);
-        conf.setBoolean(USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR, useCrtClient);
+        conf.setBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, useCrtClient);
 
         String testFile =  "s3a://noaa-cors-pds/raw/2023/017/ohfh/OHFH017d.23_.gz";
         S3AFileSystem s3AFileSystem  =  (S3AFileSystem) FileSystem.newInstance(new Path(testFile).toUri(), conf);
@@ -83,7 +83,7 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
         //Set Blobstore Capacity
         conf.setInt(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX + "." + PHYSICAL_IO_PREFIX + ".blobstore.capacity", 1);
 
-        conf.setBoolean(USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR, useCrtClient);
+        conf.setBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, useCrtClient);
 
         ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
 

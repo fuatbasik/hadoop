@@ -361,6 +361,8 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
   // If true, S3SeekableInputStream from Analytics Accelerator for Amazon S3 will be used.
   private boolean analyticsAcceleratorEnabled;
 
+  private boolean analyticsAcceleratorCRTEnabled;
+
   // Size in bytes of a single prefetch block.
   private int prefetchBlockSize;
 
@@ -704,13 +706,16 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
           intOption(conf, PREFETCH_BLOCK_COUNT_KEY, PREFETCH_BLOCK_DEFAULT_COUNT, 1);
 
       this.analyticsAcceleratorEnabled = conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
+      this.analyticsAcceleratorCRTEnabled = conf.getBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, ANALYTICS_ACCELERATOR_CRT_ENABLED_DEFAULT);
 
-      if(!analyticsAcceleratorEnabled) {
-        this.isMultipartUploadEnabled = conf.getBoolean(MULTIPART_UPLOADS_ENABLED,
-                DEFAULT_MULTIPART_UPLOAD_ENABLED);
-      } else {
+      this.isMultipartUploadEnabled = conf.getBoolean(MULTIPART_UPLOADS_ENABLED,
+              DEFAULT_MULTIPART_UPLOAD_ENABLED);
+
+      if(this.analyticsAcceleratorEnabled && !analyticsAcceleratorCRTEnabled) {
+        // Temp change: Analytics Accelerator with S3AsyncClient do not support Multi-part upload.
         this.isMultipartUploadEnabled = false;
       }
+
       // multipart copy and upload are the same; this just makes it explicit
       this.isMultipartCopyEnabled = isMultipartUploadEnabled;
 
@@ -841,7 +846,7 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
 
       if (this.analyticsAcceleratorEnabled) {
         LOG.info("Using S3SeekableInputStream");
-        if(conf.getBoolean(USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR, USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR_DEFAULT)) {
+        if(this.analyticsAcceleratorCRTEnabled) {
           LOG.info("Using S3CrtClient");
           this.s3AsyncClient = S3CrtAsyncClient.builder().maxConcurrency(600).build();
         } else {

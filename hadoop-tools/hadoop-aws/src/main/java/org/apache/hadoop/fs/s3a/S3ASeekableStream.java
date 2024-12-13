@@ -60,7 +60,14 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
     @Override
     public int read() throws IOException {
         throwIfClosed();
-        return inputStream.read();
+        int bytesRead;
+        try {
+            bytesRead = inputStream.read();
+        } catch (IOException ioe){
+            onReadFailure(ioe);
+            throw ioe;
+        }
+        return bytesRead;
     }
 
     @Override
@@ -89,18 +96,32 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
      *
      * @param buf buffer to read data into
      * @param off start position in buffer at which data is written
-     * @param n the number of bytes to read; the n-th byte should be the last byte of the stream.
+     * @param len the number of bytes to read; the n-th byte should be the last byte of the stream.
      * @return the total number of bytes read into the buffer
      */
-    public void readTail(byte[] buf, int off, int n) throws IOException {
+    public int readTail(byte[] buf, int off, int len) throws IOException {
         throwIfClosed();
-        inputStream.readTail(buf, off, n);
+        int bytesRead;
+        try {
+            bytesRead = inputStream.readTail(buf, off, len);
+        } catch (IOException ioe) {
+            onReadFailure(ioe);
+            throw ioe;
+        }
+        return bytesRead;
     }
 
     @Override
     public int read(byte[] buf, int off, int len) throws IOException {
         throwIfClosed();
-        return inputStream.read(buf, off, len);
+        int bytesRead;
+        try {
+            bytesRead = inputStream.read(buf, off, len);
+        } catch (IOException ioe) {
+            onReadFailure(ioe);
+            throw ioe;
+        }
+        return bytesRead;
     }
 
 
@@ -118,11 +139,36 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
     @Override
     public void close() throws IOException {
         if (inputStream != null) {
-            inputStream.close();
-            inputStream = null;
-            super.close();
+            try {
+                inputStream.close();
+                inputStream = null;
+                super.close();
+            } catch (IOException ioe) {
+                LOG.debug("Failure closing stream {}: ", key);
+                throw ioe;
+            }
         }
     }
+
+    /**
+     * Close the stream on read failure.
+     * No attempt to recover from failure
+     * @param ioe exception caught.
+     */
+    @Retries.OnceTranslated
+    private void onReadFailure(IOException ioe) throws IOException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Got exception while trying to read from stream {}, " +
+                            "not trying to recover:",
+                    key, ioe);
+        } else {
+            LOG.info("Got exception while trying to read from stream {}, " +
+                            "not trying to recover:",
+                    key, ioe);
+        }
+        this.close();
+    }
+
 
     protected void throwIfClosed() throws IOException {
         if (isClosed()) {
