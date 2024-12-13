@@ -329,7 +329,7 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
    * and managed by the ClientManager. Analytics accelerator library can be
    * enabled with {@link Constants#ANALYTICS_ACCELERATOR_ENABLED_KEY}
    */
-  private S3AsyncClient crtClient;
+  private S3AsyncClient s3AsyncClient;
 
   // initial callback policy is fail-once; it's there just to assist
   // some mock tests and other codepaths trying to call the low level
@@ -694,7 +694,6 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
           s3ExpressStore);
 
       this.prefetchEnabled = conf.getBoolean(PREFETCH_ENABLED_KEY, PREFETCH_ENABLED_DEFAULT);
-      this.analyticsAcceleratorEnabled = conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
       long prefetchBlockSizeLong =
           longBytesOption(conf, PREFETCH_BLOCK_SIZE_KEY, PREFETCH_BLOCK_DEFAULT_SIZE, 1);
       if (prefetchBlockSizeLong > (long) Integer.MAX_VALUE) {
@@ -703,8 +702,15 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
       this.prefetchBlockSize = (int) prefetchBlockSizeLong;
       this.prefetchBlockCount =
           intOption(conf, PREFETCH_BLOCK_COUNT_KEY, PREFETCH_BLOCK_DEFAULT_COUNT, 1);
-      this.isMultipartUploadEnabled = conf.getBoolean(MULTIPART_UPLOADS_ENABLED,
-          DEFAULT_MULTIPART_UPLOAD_ENABLED);
+
+      this.analyticsAcceleratorEnabled = conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
+
+      if(!analyticsAcceleratorEnabled) {
+        this.isMultipartUploadEnabled = conf.getBoolean(MULTIPART_UPLOADS_ENABLED,
+                DEFAULT_MULTIPART_UPLOAD_ENABLED);
+      } else {
+        this.isMultipartUploadEnabled = false;
+      }
       // multipart copy and upload are the same; this just makes it explicit
       this.isMultipartCopyEnabled = isMultipartUploadEnabled;
 
@@ -740,17 +746,6 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
       // this may do some patching of the configuration (e.g. setting
       // the encryption algorithms)
       ClientManager clientManager = createClientManager(name, delegationTokensEnabled);
-
-      if (this.analyticsAcceleratorEnabled) {
-        LOG.info("Using S3SeekableInputStream");
-        this.crtClient = S3CrtAsyncClient.builder().maxConcurrency(600).build();
-        ConnectorConfiguration configuration = new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
-        S3SeekableInputStreamConfiguration seekableInputStreamConfiguration =
-                S3SeekableInputStreamConfiguration.fromConfiguration(configuration);
-        this.s3SeekableInputStreamFactory =
-                new S3SeekableInputStreamFactory(
-                        new S3SdkObjectClient(this.crtClient), seekableInputStreamConfiguration);
-      }
 
       inputPolicy = S3AInputPolicy.getPolicy(
           conf.getTrimmed(INPUT_FADVISE,
@@ -843,6 +838,25 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
       // directly through the client manager.
       // this is to aid mocking.
       s3Client = store.getOrCreateS3Client();
+
+      if (this.analyticsAcceleratorEnabled) {
+        LOG.info("Using S3SeekableInputStream");
+        if(conf.getBoolean(USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR, USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR_DEFAULT)) {
+          LOG.info("Using S3CrtClient");
+          this.s3AsyncClient = S3CrtAsyncClient.builder().maxConcurrency(600).build();
+        } else {
+          LOG.info("Using S3Client");
+          this.s3AsyncClient = store.getOrCreateAsyncClient();
+        }
+
+        ConnectorConfiguration configuration = new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
+        S3SeekableInputStreamConfiguration seekableInputStreamConfiguration =
+                S3SeekableInputStreamConfiguration.fromConfiguration(configuration);
+        this.s3SeekableInputStreamFactory =
+                new S3SeekableInputStreamFactory(
+                        new S3SdkObjectClient(this.s3AsyncClient), seekableInputStreamConfiguration);
+      }
+
       // The filesystem is now ready to perform operations against
       // S3
       // This initiates a probe against S3 for the bucket existing.
@@ -4468,7 +4482,7 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
         closeAutocloseables(LOG, store, s3SeekableInputStreamFactory);
         store = null;
         s3Client = null;
-        crtClient = null;
+        s3AsyncClient = null;
         s3SeekableInputStreamFactory = null;
 
         // At this point the S3A client is shut down,

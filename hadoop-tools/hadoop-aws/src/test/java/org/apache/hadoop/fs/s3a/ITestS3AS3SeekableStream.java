@@ -30,6 +30,7 @@ import org.apache.hadoop.fs.Path;
 
 import static org.apache.hadoop.fs.s3a.Constants.ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX;
 import static org.apache.hadoop.fs.s3a.Constants.ANALYTICS_ACCELERATOR_ENABLED_KEY;
+import static org.apache.hadoop.fs.s3a.Constants.USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR;
 import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBaseAndBucketOverrides;
 
 import software.amazon.s3.analyticsaccelerator.S3SeekableInputStreamConfiguration;
@@ -41,13 +42,13 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
     final String PHYSICAL_IO_PREFIX = "physicalio";
     final String LOGICAL_IO_PREFIX = "logicalio";
 
-    @Test
-    public void testConnectorFrameWorkIntegration() throws IOException {
+    public void testConnectorFrameWorkIntegration(boolean useCrtClient) throws IOException {
         describe("Verify S3 connector framework integration");
 
         Configuration conf = getConfiguration();
         removeBaseAndBucketOverrides(conf, ANALYTICS_ACCELERATOR_ENABLED_KEY);
         conf.setBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, true);
+        conf.setBoolean(USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR, useCrtClient);
 
         String testFile =  "s3a://noaa-cors-pds/raw/2023/017/ohfh/OHFH017d.23_.gz";
         S3AFileSystem s3AFileSystem  =  (S3AFileSystem) FileSystem.newInstance(new Path(testFile).toUri(), conf);
@@ -60,9 +61,17 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
 
     }
 
+    @Test
+    public void testConnectorFrameWorkIntegrationWithCrtClient() throws IOException {
+        testConnectorFrameWorkIntegration(true);
+    }
 
     @Test
-    public void testConnectorFrameworkConfigurable() {
+    public void testConnectorFrameWorkIntegrationWithoutCrtClient() throws IOException {
+        testConnectorFrameWorkIntegration(false);
+    }
+
+    public void testConnectorFrameworkConfigurable(boolean useCrtClient) {
         describe("Verify S3 connector framework reads configuration");
 
         Configuration conf = getConfiguration();
@@ -74,11 +83,23 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
         //Set Blobstore Capacity
         conf.setInt(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX + "." + PHYSICAL_IO_PREFIX + ".blobstore.capacity", 1);
 
+        conf.setBoolean(USE_CRT_CLIENT_WITH_S3A_ANALYTICS_ACCELERATOR, useCrtClient);
+
         ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
 
         S3SeekableInputStreamConfiguration configuration = S3SeekableInputStreamConfiguration.fromConfiguration(connectorConfiguration);
         assertEquals(configuration.getLogicalIOConfiguration().getPrefetchingMode(), PrefetchMode.ALL);
         assert configuration.getPhysicalIOConfiguration().getBlobStoreCapacity() == 1;
+    }
+
+    @Test
+    public void testConnectorFrameworkConfigurableWithoutCrtClient() throws IOException {
+        testConnectorFrameworkConfigurable(false);
+    }
+
+    @Test
+    public void testConnectorFrameworkConfigurableWithCrtClient() throws IOException {
+        testConnectorFrameworkConfigurable(true);
     }
 
     @Test
