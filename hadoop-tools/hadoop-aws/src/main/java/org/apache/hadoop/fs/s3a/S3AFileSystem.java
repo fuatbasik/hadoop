@@ -854,12 +854,14 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
           this.s3AsyncClient = store.getOrCreateAsyncClient();
         }
 
-        ConnectorConfiguration configuration = new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
+        ConnectorConfiguration configuration = new ConnectorConfiguration(conf,
+            ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
         S3SeekableInputStreamConfiguration seekableInputStreamConfiguration =
-                S3SeekableInputStreamConfiguration.fromConfiguration(configuration);
+            S3SeekableInputStreamConfiguration.fromConfiguration(configuration);
         this.s3SeekableInputStreamFactory =
-                new S3SeekableInputStreamFactory(
-                        new S3SdkObjectClient(this.s3AsyncClient), seekableInputStreamConfiguration);
+            new S3SeekableInputStreamFactory(
+                new S3SdkObjectClient(this.s3AsyncClient),
+                seekableInputStreamConfiguration);
       }
 
       // The filesystem is now ready to perform operations against
