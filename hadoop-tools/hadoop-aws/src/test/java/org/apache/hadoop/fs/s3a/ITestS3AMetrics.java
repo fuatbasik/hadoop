@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.statistics.IOStatisticsLogging.ioStatisticsSourceToString;
 
 /**
@@ -51,6 +52,8 @@ public class ITestS3AMetrics extends AbstractS3ATestBase {
 
   @Test
   public void testStreamStatistics() throws IOException {
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+
     S3AFileSystem fs = getFileSystem();
     Path file = path("testStreamStatistics");
     byte[] data = "abcdefghijklmnopqrstuvwxyz".getBytes();
