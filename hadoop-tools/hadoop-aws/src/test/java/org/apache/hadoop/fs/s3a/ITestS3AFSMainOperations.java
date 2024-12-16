@@ -29,9 +29,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.contract.s3a.S3AContract;
 
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.createTestPath;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.isCreatePerformanceEnabled;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.setPerformanceFlags;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.*;
 
 /**
  * S3A Test suite for the FSMainOperationsBaseTest tests.
@@ -79,6 +77,18 @@ public class ITestS3AFSMainOperations extends FSMainOperationsBaseTest {
   }
 
   @Override
+  public void testWriteReadAndDeleteOneAndAHalfBlocks() throws Exception {
+    //Skipping this test for AnalyticsAccelerator as it is acting as an overwrite test
+    skipIfAnalyticsAcceleratorEnabled(this.contract.getConf());
+  }
+
+  @Override
+  public void testWriteReadAndDeleteTwoBlocks() throws Exception {
+    //Skipping this test for AnalyticsAccelerator as it is acting as an overwrite test
+    skipIfAnalyticsAcceleratorEnabled(this.contract.getConf());
+  }
+
+    @Override
   public void testOverwrite() throws IOException {
     boolean createPerformance = isCreatePerformanceEnabled(fSys);
     try {
