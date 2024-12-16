@@ -60,6 +60,7 @@ import static org.apache.hadoop.fs.s3a.Constants.REQUEST_TIMEOUT;
 import static org.apache.hadoop.fs.s3a.Constants.RETRY_LIMIT;
 import static org.apache.hadoop.fs.s3a.Constants.SOCKET_TIMEOUT;
 import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBaseAndBucketOverrides;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.s3a.commit.CommitConstants.MAGIC_PATH_PREFIX;
 import static org.apache.hadoop.fs.s3a.impl.ConfigurationHelper.setDurationAsMillis;
 import static org.apache.hadoop.test.LambdaTestUtils.intercept;
@@ -146,6 +147,10 @@ public class ITestConnectionTimeouts extends AbstractS3ATestBase {
   @Test
   public void testGeneratePoolTimeouts() throws Throwable {
     skipIfClientSideEncryption();
+
+    // Assertions will fail when using CRTClient with SeekableStream.
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+
     AWSClientConfig.setMinimumOperationDuration(Duration.ZERO);
     Configuration conf = timingOutConfiguration();
     Path path = methodPath();
@@ -188,6 +193,10 @@ public class ITestConnectionTimeouts extends AbstractS3ATestBase {
   @Test
   public void testObjectUploadTimeouts() throws Throwable {
     skipIfClientSideEncryption();
+
+    // Assertions will fail when using CRTClient with SeekableStream.
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+
     AWSClientConfig.setMinimumOperationDuration(Duration.ZERO);
     final Path dir = methodPath();
     Path file = new Path(dir, "file");
