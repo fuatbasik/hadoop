@@ -34,6 +34,7 @@ import org.apache.hadoop.test.GenericTestUtils;
 
 import static org.apache.hadoop.fs.contract.ContractTestUtils.dataset;
 import static org.apache.hadoop.fs.s3a.S3ATestUtils.assume;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.assertThatStatisticCounter;
 import static org.apache.hadoop.fs.statistics.StreamStatisticNames.STREAM_LEAKS;
 import static org.apache.hadoop.test.GenericTestUtils.LogCapturer.captureLogs;
@@ -58,7 +59,7 @@ public class ITestS3AInputStreamLeakage extends AbstractS3ATestBase {
   @Override
   public void setup() throws Exception {
     super.setup();
-    assume("Stream leak detection not avaialable",
+    assume("Stream leak detection not available",
         getFileSystem().hasCapability(STREAM_LEAKS));
   }
 
@@ -89,6 +90,8 @@ public class ITestS3AInputStreamLeakage extends AbstractS3ATestBase {
   @Test
   public void testFinalizer() throws Throwable {
     Path path = methodPath();
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+
     final S3AFileSystem fs = getFileSystem();
 
     ContractTestUtils.createFile(fs, path, true, DATASET);

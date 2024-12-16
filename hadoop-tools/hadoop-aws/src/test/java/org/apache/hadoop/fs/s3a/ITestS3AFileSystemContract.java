@@ -34,8 +34,7 @@ import org.apache.hadoop.fs.FileSystemContractBaseTest;
 import org.apache.hadoop.fs.Path;
 
 import static org.apache.hadoop.fs.contract.ContractTestUtils.skip;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.isCreatePerformanceEnabled;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.setPerformanceFlags;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.*;
 import static org.apache.hadoop.test.LambdaTestUtils.intercept;
 import static org.junit.Assume.*;
 import static org.junit.Assert.*;
@@ -159,5 +158,11 @@ public class ITestS3AFileSystemContract extends FileSystemContractBaseTest {
         throw e;
       }
     }
+  }
+
+  @Override
+  public void testOverWriteAndRead() throws Exception {
+    skipIfAnalyticsAcceleratorEnabled(fs.getConf());
+    super.testOverWriteAndRead();
   }
 }
