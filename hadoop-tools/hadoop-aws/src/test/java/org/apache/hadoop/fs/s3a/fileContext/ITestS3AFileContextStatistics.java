@@ -46,7 +46,8 @@ public class ITestS3AFileContextStatistics extends FCStatisticsBaseTest {
   @Before
   public void setUp() throws Exception {
     conf = new Configuration();
-    skipIfAnalyticsAcceleratorEnabled(conf);
+    skipIfAnalyticsAcceleratorEnabled(conf,
+        "S3SeekableStream does not support File Context Statistics");
     fc = S3ATestUtils.createTestFileContext(conf);
     testRootPath = fileContextTestHelper.getTestRootPath(fc, "test");
     fc.mkdir(testRootPath,

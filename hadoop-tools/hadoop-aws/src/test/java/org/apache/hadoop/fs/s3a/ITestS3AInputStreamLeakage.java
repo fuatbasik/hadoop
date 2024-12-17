@@ -90,7 +90,9 @@ public class ITestS3AInputStreamLeakage extends AbstractS3ATestBase {
   @Test
   public void testFinalizer() throws Throwable {
     Path path = methodPath();
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    // TODO: Add Leak Detection to S3SeekableStream
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "S3SeekableStream does not support leak detection");
 
     final S3AFileSystem fs = getFileSystem();
 

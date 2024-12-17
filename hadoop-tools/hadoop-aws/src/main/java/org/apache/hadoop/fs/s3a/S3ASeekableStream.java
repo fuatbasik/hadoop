@@ -38,6 +38,7 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
   private S3SeekableInputStream inputStream;
   private long lastReadCurrentPos = 0;
   private final String key;
+  private volatile boolean closed;
 
   public static final Logger LOG = LoggerFactory.getLogger(S3ASeekableStream.class);
 
@@ -84,7 +85,7 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
 
   @Override
   public synchronized long getPos() {
-    if (!isClosed()) {
+    if (!closed) {
       lastReadCurrentPos = inputStream.getPos();
     }
     return lastReadCurrentPos;
@@ -139,8 +140,9 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
   }
 
   @Override
-  public void close() throws IOException {
-    if (inputStream != null) {
+  public synchronized void close() throws IOException {
+    if(!closed) {
+      closed = true;
       try {
         inputStream.close();
         inputStream = null;
@@ -174,12 +176,8 @@ public class S3ASeekableStream extends FSInputStream implements StreamCapabiliti
 
 
   protected void throwIfClosed() throws IOException {
-    if (isClosed()) {
+    if (closed) {
       throw new IOException(key + ": " + FSExceptionMessages.STREAM_IS_CLOSED);
     }
-  }
-
-  protected boolean isClosed() {
-    return inputStream == null;
   }
 }

@@ -49,7 +49,8 @@ public class ITestS3AContractRename extends AbstractContractRenameTest {
   @Override
   public void setup() throws Exception {
     super.setup();
-    skipIfAnalyticsAcceleratorEnabled(getContract().getConf());
+    skipIfAnalyticsAcceleratorEnabled(createConfiguration(),
+        "Analytics Accelerator does not support rename");
 
   }
   @Override

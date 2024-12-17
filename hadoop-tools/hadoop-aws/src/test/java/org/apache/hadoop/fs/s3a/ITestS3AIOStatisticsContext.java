@@ -78,7 +78,9 @@ public class ITestS3AIOStatisticsContext extends AbstractS3ATestBase {
   public void setup() throws Exception {
     super.setup();
     executor = HadoopExecutors.newFixedThreadPool(SMALL_THREADS);
-    skipIfAnalyticsAcceleratorEnabled(getContract().getConf());
+    // TODO: Add IOStatistics Support to S3SeekableStream
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "S3SeekableStream does not support IOStatisticsContext");
 
   }
 

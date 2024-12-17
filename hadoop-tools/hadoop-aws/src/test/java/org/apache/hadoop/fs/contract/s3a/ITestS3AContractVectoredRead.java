@@ -86,12 +86,13 @@ public class ITestS3AContractVectoredRead extends AbstractContractVectoredReadTe
   }
 
   /**
-   * Analytics Accelerator Library for Amazon S3 does not support Vectored Reads
+   * Analytics Accelerator Library for Amazon S3 does not support Vectored Reads.
    * @throws Exception
    */
   @Override
   public void setup() throws Exception {
-    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(createConfiguration(),
+        "Analytics Accelerator does not support vectored reads");
     super.setup();
   }
 

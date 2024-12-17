@@ -205,8 +205,8 @@ public class ITestCommitOperationCost extends AbstractS3ACostTest {
   public void testCostOfCreatingMagicFile() throws Throwable {
     describe("Files created under magic paths skip existence checks and marker deletes");
 
-    // Assertions will fail as {@link S3ASeekableInputStream} do not support InputStreamStatistics yes
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "S3ASeekableInputStream does not support InputStreamStatistics");
     S3AFileSystem fs = getFileSystem();
     Path destFile = methodSubPath("file.txt");
     fs.delete(destFile.getParent(), true);
@@ -286,8 +286,8 @@ public class ITestCommitOperationCost extends AbstractS3ACostTest {
   public void testCostOfSavingLoadingPendingFile() throws Throwable {
     describe("Verify costs of saving .pending file under a magic path");
 
-    // Assertions will fail as {@link S3ASeekableInputStream} do not support InputStreamStatistics yes
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "S3ASeekableInputStream does not support InputStreamStatistics");
     S3AFileSystem fs = getFileSystem();
     Path partDir = methodSubPath("file.pending");
     Path destFile = new Path(partDir, "file.pending");

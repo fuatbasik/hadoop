@@ -91,7 +91,8 @@ public class ITestS3AEncryptionSSEC extends AbstractTestS3AEncryption {
   @Override
   public void setup() throws Exception {
     super.setup();
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "Analytics Accelerator does not support SSEC");
     assumeEnabled();
     // although not a root dir test, this confuses paths enough it shouldn't be run in
     // parallel with other jobs

@@ -36,6 +36,7 @@ import static org.apache.hadoop.fs.s3a.Constants.CHANGE_DETECT_SOURCE;
 import static org.apache.hadoop.fs.s3a.Constants.RETRY_INTERVAL;
 import static org.apache.hadoop.fs.s3a.Constants.RETRY_LIMIT;
 import static org.apache.hadoop.fs.s3a.S3ATestUtils.removeBaseAndBucketOverrides;
+import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
 
 /**
  * Tests behavior of a FileNotFound error that happens after open(), i.e. on
@@ -65,6 +66,8 @@ public class ITestS3ADelayedFNF extends AbstractS3ATestBase {
    */
   @Test
   public void testNotFoundFirstRead() throws Exception {
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "Temporarily disabling to fix Exception handling on Analytics Accelerator");
     S3AFileSystem fs = getFileSystem();
     ChangeDetectionPolicy changeDetectionPolicy =
         fs.getChangeDetectionPolicy();

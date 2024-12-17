@@ -52,7 +52,9 @@ public class ITestS3AMetrics extends AbstractS3ATestBase {
 
   @Test
   public void testStreamStatistics() throws IOException {
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    // TODO: Add StreamStatistics support to S3SeekableStream
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "S3SeekableStream does not support stream statistics");
 
     S3AFileSystem fs = getFileSystem();
     Path file = path("testStreamStatistics");

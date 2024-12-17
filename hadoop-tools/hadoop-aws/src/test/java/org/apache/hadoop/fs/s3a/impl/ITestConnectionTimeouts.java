@@ -148,8 +148,9 @@ public class ITestConnectionTimeouts extends AbstractS3ATestBase {
   public void testGeneratePoolTimeouts() throws Throwable {
     skipIfClientSideEncryption();
 
-    // Assertions will fail when using CRTClient with SeekableStream.
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    // Assertions will fail when using CRTClient with Analytics Accelerator.
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "Assertions will fail when using CRTClient with Analytics Accelerator");
 
     AWSClientConfig.setMinimumOperationDuration(Duration.ZERO);
     Configuration conf = timingOutConfiguration();
@@ -194,8 +195,9 @@ public class ITestConnectionTimeouts extends AbstractS3ATestBase {
   public void testObjectUploadTimeouts() throws Throwable {
     skipIfClientSideEncryption();
 
-    // Assertions will fail when using CRTClient with SeekableStream.
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    // Assertions will fail when using CRTClient with Analytics Accelerator.
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "Assertions will fail when using CRTClient with Analytics Accelerator");
 
     AWSClientConfig.setMinimumOperationDuration(Duration.ZERO);
     final Path dir = methodPath();

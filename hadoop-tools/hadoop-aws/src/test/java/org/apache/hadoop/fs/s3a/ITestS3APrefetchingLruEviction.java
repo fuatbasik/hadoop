@@ -42,10 +42,7 @@ import org.apache.hadoop.fs.s3a.performance.AbstractS3ACostTest;
 import org.apache.hadoop.fs.statistics.IOStatistics;
 import org.apache.hadoop.test.LambdaTestUtils;
 
-import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_BLOCK_SIZE_KEY;
-import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_ENABLED_KEY;
-import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_MAX_BLOCKS_COUNT;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
+import static org.apache.hadoop.fs.s3a.Constants.*;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.assertThatStatisticCounter;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.verifyStatisticCounterValues;
 import static org.apache.hadoop.fs.statistics.IOStatisticAssertions.verifyStatisticGaugeValue;
@@ -67,12 +64,6 @@ public class ITestS3APrefetchingLruEviction extends AbstractS3ACostTest {
         {"1"},
         {"2"}
     });
-  }
-
-  @Override
-  public void setup() throws Exception {
-    super.setup();
-    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
   }
 
   public ITestS3APrefetchingLruEviction(final String maxBlocks) {
@@ -100,6 +91,8 @@ public class ITestS3APrefetchingLruEviction extends AbstractS3ACostTest {
     conf.setBoolean(PREFETCH_ENABLED_KEY, true);
     conf.setInt(PREFETCH_MAX_BLOCKS_COUNT, Integer.parseInt(maxBlocks));
     conf.setInt(PREFETCH_BLOCK_SIZE_KEY, BLOCK_SIZE);
+    // When both Prefetching and Analytics Accelerator enabled Analytics Accelerator is used
+    conf.setBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, false);
     return conf;
   }
 

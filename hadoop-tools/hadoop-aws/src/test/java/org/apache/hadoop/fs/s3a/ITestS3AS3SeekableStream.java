@@ -39,8 +39,8 @@ import software.amazon.s3.analyticsaccelerator.util.PrefetchMode;
 
 public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
 
-  final String PHYSICAL_IO_PREFIX = "physicalio";
-  final String LOGICAL_IO_PREFIX = "logicalio";
+  private static final String PHYSICAL_IO_PREFIX = "physicalio";
+  private static final String LOGICAL_IO_PREFIX = "logicalio";
 
   public void testConnectorFrameWorkIntegration(boolean useCrtClient) throws IOException {
     describe("Verify S3 connector framework integration");
@@ -51,7 +51,8 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
     conf.setBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, useCrtClient);
 
     String testFile = "s3a://noaa-cors-pds/raw/2023/017/ohfh/OHFH017d.23_.gz";
-    S3AFileSystem s3AFileSystem = (S3AFileSystem) FileSystem.newInstance(new Path(testFile).toUri(), conf);
+    S3AFileSystem s3AFileSystem =
+        (S3AFileSystem) FileSystem.newInstance(new Path(testFile).toUri(), conf);
     byte[] buffer = new byte[500];
 
     try (FSDataInputStream inputStream = s3AFileSystem.open(new Path(testFile))) {
@@ -78,20 +79,26 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
     removeBaseAndBucketOverrides(conf);
 
     //Disable Predictive Prefetching
-    conf.set(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX + "." + LOGICAL_IO_PREFIX + ".prefetching.mode", "all");
+    conf.set(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX +
+        "." + LOGICAL_IO_PREFIX + ".prefetching.mode", "all");
 
     //Set Blobstore Capacity
-    conf.setInt(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX + "." + PHYSICAL_IO_PREFIX + ".blobstore.capacity", 1);
+    conf.setInt(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX +
+        "." + PHYSICAL_IO_PREFIX + ".blobstore.capacity", 1);
 
     conf.setBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, useCrtClient);
 
-    ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
+    ConnectorConfiguration connectorConfiguration =
+        new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
 
-    S3SeekableInputStreamConfiguration configuration = S3SeekableInputStreamConfiguration.fromConfiguration(connectorConfiguration);
+    S3SeekableInputStreamConfiguration configuration =
+        S3SeekableInputStreamConfiguration.fromConfiguration(connectorConfiguration);
 
-    assertSame("S3ASeekableStream configuration is not set to expected value", PrefetchMode.ALL, configuration.getLogicalIOConfiguration().getPrefetchingMode());
+    assertSame("S3ASeekableStream configuration is not set to expected value",
+        PrefetchMode.ALL, configuration.getLogicalIOConfiguration().getPrefetchingMode());
 
-    assertEquals("S3ASeekableStream configuration is not set to expected value", 1, configuration.getPhysicalIOConfiguration().getBlobStoreCapacity());
+    assertEquals("S3ASeekableStream configuration is not set to expected value",
+        1, configuration.getPhysicalIOConfiguration().getBlobStoreCapacity());
   }
 
   @Test
@@ -111,10 +118,13 @@ public class ITestS3AS3SeekableStream extends AbstractS3ATestBase {
     Configuration conf = getConfiguration();
     removeBaseAndBucketOverrides(conf);
     //Disable Sequential Prefetching
-    conf.setInt(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX + "." + PHYSICAL_IO_PREFIX + ".blobstore.capacity", -1);
+    conf.setInt(ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX +
+        "." + PHYSICAL_IO_PREFIX + ".blobstore.capacity", -1);
 
-    ConnectorConfiguration connectorConfiguration = new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
-    assertThrows("S3ASeekableStream illegal configuration does not throw", IllegalArgumentException.class, () ->
-        S3SeekableInputStreamConfiguration.fromConfiguration(connectorConfiguration));
+    ConnectorConfiguration connectorConfiguration =
+        new ConnectorConfiguration(conf, ANALYTICS_ACCELERATOR_CONFIGURATION_PREFIX);
+    assertThrows("S3ASeekableStream illegal configuration does not throw",
+        IllegalArgumentException.class, () ->
+            S3SeekableInputStreamConfiguration.fromConfiguration(connectorConfiguration));
   }
 }

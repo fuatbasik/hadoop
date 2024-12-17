@@ -326,7 +326,7 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
 
   /**
    * CRT-Based S3Client created of analytics accelerator library is enabled
-   * and managed by the ClientManager. Analytics accelerator library can be
+   * and managed by the S3AStoreImpl. Analytics accelerator library can be
    * enabled with {@link Constants#ANALYTICS_ACCELERATOR_ENABLED_KEY}
    */
   private S3AsyncClient s3AsyncClient;
@@ -545,7 +545,7 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
   private boolean s3AccessGrantsEnabled;
 
   /**
-   * Factory to create S3SeekableInputStream if {@link this#analyticsAcceleratorEnabled} is true
+   * Factory to create S3SeekableInputStream if {@link this#analyticsAcceleratorEnabled} is true.
    */
   private S3SeekableInputStreamFactory s3SeekableInputStreamFactory;
 
@@ -705,8 +705,10 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
       this.prefetchBlockCount =
           intOption(conf, PREFETCH_BLOCK_COUNT_KEY, PREFETCH_BLOCK_DEFAULT_COUNT, 1);
 
-      this.analyticsAcceleratorEnabled = conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
-      this.analyticsAcceleratorCRTEnabled = conf.getBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, ANALYTICS_ACCELERATOR_CRT_ENABLED_DEFAULT);
+      this.analyticsAcceleratorEnabled =
+          conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
+      this.analyticsAcceleratorCRTEnabled =
+          conf.getBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, ANALYTICS_ACCELERATOR_CRT_ENABLED_DEFAULT);
 
       this.isMultipartUploadEnabled = conf.getBoolean(MULTIPART_UPLOADS_ENABLED,
               DEFAULT_MULTIPART_UPLOAD_ENABLED);
@@ -847,10 +849,10 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
       if (this.analyticsAcceleratorEnabled) {
         LOG.info("Using S3SeekableInputStream");
         if(this.analyticsAcceleratorCRTEnabled) {
-          LOG.info("Using S3CrtClient");
+          LOG.info("Using S3 CRT client for analytics accelerator S3");
           this.s3AsyncClient = S3CrtAsyncClient.builder().maxConcurrency(600).build();
         } else {
-          LOG.info("Using S3Client");
+          LOG.info("Using S3 async client for analytics accelerator S3");
           this.s3AsyncClient = store.getOrCreateAsyncClient();
         }
 

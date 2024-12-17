@@ -66,7 +66,8 @@ public class ITestStagingCommitProtocol extends AbstractITCommitProtocol {
   @Override
   public void setup() throws Exception {
     super.setup();
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "Skipping because these tests will fail when using CRT client");
 
 
     // identify working dir for staging and delete

@@ -78,17 +78,19 @@ public class ITestS3AFSMainOperations extends FSMainOperationsBaseTest {
 
   @Override
   public void testWriteReadAndDeleteOneAndAHalfBlocks() throws Exception {
-    //Skipping this test for AnalyticsAccelerator as it is acting as an overwrite test
-    skipIfAnalyticsAcceleratorEnabled(this.contract.getConf());
+    // Skipping this test for AnalyticsAccelerator as it is acting as an overwrite test
+    skipIfAnalyticsAcceleratorEnabled(this.contract.getConf(),
+        "Analytics Accelerator does not support overwrites");
   }
 
   @Override
   public void testWriteReadAndDeleteTwoBlocks() throws Exception {
-    //Skipping this test for AnalyticsAccelerator as it is acting as an overwrite test
-    skipIfAnalyticsAcceleratorEnabled(this.contract.getConf());
+    // Skipping this test for AnalyticsAccelerator as it is acting as an overwrite test
+    skipIfAnalyticsAcceleratorEnabled(this.contract.getConf(),
+        "Analytics Accelerator does not support overwrites");
   }
 
-    @Override
+  @Override
   public void testOverwrite() throws IOException {
     boolean createPerformance = isCreatePerformanceEnabled(fSys);
     try {

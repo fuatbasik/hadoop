@@ -89,7 +89,9 @@ public class ITestS3AContractCreate extends AbstractContractCreateTest {
 
   @Override
   public void testOverwriteExistingFile() throws Throwable {
-    skipIfAnalyticsAcceleratorEnabled(this.createConfiguration());
+    // Will remove this when Analytics Accelerator supports overwrites
+    skipIfAnalyticsAcceleratorEnabled(this.createConfiguration(),
+        "Analytics Accelerator does not support overwrites yet");
     super.testOverwriteExistingFile();
   }
 

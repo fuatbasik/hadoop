@@ -82,7 +82,8 @@ public class ITestS3AContractStreamIOStatistics extends
   @Override
   public void setup() throws Exception {
     super.setup();
-    skipIfAnalyticsAcceleratorEnabled(getContract().getConf());
+    skipIfAnalyticsAcceleratorEnabled(createConfiguration(),
+        "S3SeekableStream does not support Stream Statistics");
   }
 
 }

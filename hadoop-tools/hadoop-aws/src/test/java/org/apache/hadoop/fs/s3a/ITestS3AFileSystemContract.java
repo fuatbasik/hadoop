@@ -162,7 +162,9 @@ public class ITestS3AFileSystemContract extends FileSystemContractBaseTest {
 
   @Override
   public void testOverWriteAndRead() throws Exception {
-    skipIfAnalyticsAcceleratorEnabled(fs.getConf());
+    //Will remove this when Analytics Accelerator supports overwrites
+    skipIfAnalyticsAcceleratorEnabled(fs.getConf(),
+        "Analytics Accelerator does not support overwrites");
     super.testOverWriteAndRead();
   }
 }

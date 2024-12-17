@@ -579,13 +579,14 @@ public final class S3ATestUtils {
    * @param configuration configuration to probe
    */
   public static void skipIfAnalyticsAcceleratorEnabled(
-          Configuration configuration) {
-    assume("Skipping test as Analytics Accelerator Library does not support this functionality",
+          Configuration configuration, String message) {
+    assume(message,
             !isAnalyticsAcceleratorEnabled(configuration));
   }
 
   public static boolean isAnalyticsAcceleratorEnabled(final Configuration conf) {
-    return conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
+    return conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY,
+        ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
   }
 
   /**

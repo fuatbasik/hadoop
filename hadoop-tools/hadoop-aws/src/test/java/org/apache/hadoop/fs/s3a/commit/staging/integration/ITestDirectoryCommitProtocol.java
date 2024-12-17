@@ -47,7 +47,8 @@ public class ITestDirectoryCommitProtocol extends ITestStagingCommitProtocol {
   @Override
   public void setup() throws Exception {
     super.setup();
-    skipIfAnalyticsAcceleratorEnabled(getConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "Skipping because these tests will fail when using CRT client");
   }
 
   @Override

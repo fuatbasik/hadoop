@@ -111,7 +111,8 @@ public class ITestS3AOpenCost extends AbstractS3ACostTest {
   @Override
   public void setup() throws Exception {
     super.setup();
-    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "Assertions will fail as S3SeekableStream does not support Stream Statistics");
     S3AFileSystem fs = getFileSystem();
     testFile = methodPath();
 

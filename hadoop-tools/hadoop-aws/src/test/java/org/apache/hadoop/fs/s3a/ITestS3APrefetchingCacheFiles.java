@@ -37,11 +37,7 @@ import org.apache.hadoop.fs.contract.ContractTestUtils;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.s3a.performance.AbstractS3ACostTest;
 
-import static org.apache.hadoop.fs.s3a.Constants.BUFFER_DIR;
-import static org.apache.hadoop.fs.s3a.Constants.ENDPOINT;
-import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_BLOCK_SIZE_KEY;
-import static org.apache.hadoop.fs.s3a.Constants.PREFETCH_ENABLED_KEY;
-import static org.apache.hadoop.fs.s3a.S3ATestUtils.skipIfAnalyticsAcceleratorEnabled;
+import static org.apache.hadoop.fs.s3a.Constants.*;
 import static org.apache.hadoop.fs.s3a.test.PublicDatasetTestUtils.getExternalData;
 import static org.apache.hadoop.fs.s3a.test.PublicDatasetTestUtils.isUsingDefaultExternalDataFile;
 import static org.apache.hadoop.io.IOUtils.cleanupWithLogger;
@@ -78,7 +74,6 @@ public class ITestS3APrefetchingCacheFiles extends AbstractS3ACostTest {
     super.setup();
     // Sets BUFFER_DIR by calling S3ATestUtils#prepareTestConfiguration
     conf = createConfiguration();
-    skipIfAnalyticsAcceleratorEnabled(conf);
     testFile = getExternalData(conf);
     prefetchBlockSize = conf.getInt(PREFETCH_BLOCK_SIZE_KEY, BLOCK_SIZE);
     fs = FileSystem.get(testFile.toUri(), conf);
@@ -99,6 +94,8 @@ public class ITestS3APrefetchingCacheFiles extends AbstractS3ACostTest {
     final String bufferDirBase = configuration.get(BUFFER_DIR);
     bufferDir = bufferDirBase + "/" + UUID.randomUUID();
     configuration.set(BUFFER_DIR, bufferDir);
+    // When both Prefetching and Analytics Accelerator enabled Analytics Accelerator is used
+    conf.setBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, false);
     return configuration;
   }
 

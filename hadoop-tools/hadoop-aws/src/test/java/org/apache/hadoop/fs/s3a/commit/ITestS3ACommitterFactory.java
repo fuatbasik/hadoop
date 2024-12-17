@@ -183,7 +183,8 @@ public final class ITestS3ACommitterFactory extends AbstractCommitITest {
     // destroy all filesystems from previous runs.
     FileSystem.closeAllForUGI(UserGroupInformation.getCurrentUser());
     super.setup();
-    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
+    skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
+        "S3ASeekableInputStream does not support InputStreamStatistics");
     jobId = randomJobId();
     attempt0 = "attempt_" + jobId + "_m_000000_0";
     taskAttempt0 = TaskAttemptID.forName(attempt0);

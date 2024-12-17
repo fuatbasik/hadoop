@@ -53,12 +53,6 @@ public class ITestS3AContractDistCp extends AbstractContractDistCpTest {
   }
 
   @Override
-  public void setup() throws Exception {
-    super.setup();
-    skipIfAnalyticsAcceleratorEnabled(createConfiguration());
-  }
-
-  @Override
   protected boolean shouldUseDirectWrite() {
     return true;
   }
@@ -83,6 +77,14 @@ public class ITestS3AContractDistCp extends AbstractContractDistCpTest {
     super.testNonDirectWrite();
     assertEquals("Expected 2 renames for a non-direct write distcp", 2L,
         getRenameOperationCount() - renames);
+  }
+
+  @Override
+  public void testDistCpUpdateCheckFileSkip() throws Exception {
+    //Will remove this when Analytics Accelerator supports overwrites
+    skipIfAnalyticsAcceleratorEnabled(createConfiguration(),
+        "Analytics Accelerator Library does not support update to existing files");
+    super.testDistCpUpdateCheckFileSkip();
   }
 
   private long getRenameOperationCount() {
