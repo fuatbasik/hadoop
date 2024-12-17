@@ -95,7 +95,7 @@ public class ITestS3APrefetchingCacheFiles extends AbstractS3ACostTest {
     bufferDir = bufferDirBase + "/" + UUID.randomUUID();
     configuration.set(BUFFER_DIR, bufferDir);
     // When both Prefetching and Analytics Accelerator enabled Analytics Accelerator is used
-    conf.setBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, false);
+    configuration.setBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, false);
     return configuration;
   }
 
