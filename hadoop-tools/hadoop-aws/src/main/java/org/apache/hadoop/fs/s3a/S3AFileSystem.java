@@ -52,6 +52,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
+import org.apache.hadoop.fs.s3a.audit.impl.ActiveAuditManagerS3A;
+import org.apache.hadoop.fs.s3a.audit.impl.LoggingAuditor;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
@@ -227,6 +229,7 @@ import org.apache.hadoop.util.RateLimitingFactory;
 import org.apache.hadoop.util.SemaphoredDelegatingExecutor;
 import org.apache.hadoop.util.concurrent.HadoopExecutors;
 import org.apache.hadoop.util.functional.CallableRaisingIOE;
+import software.amazon.s3.analyticsaccelerator.request.ObjectClient;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.hadoop.fs.CommonConfigurationKeys.IOSTATISTICS_LOGGING_LEVEL;
@@ -1941,6 +1944,7 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
         statisticsContext.newInputStreamStatistics();
     // this span is passed into the stream.
     final AuditSpan auditSpan = entryPoint(INVOCATION_OPEN, path);
+    System.out.println("AuditSpan class: " + auditSpan.getClass().getName());
     final S3AFileStatus fileStatus =
         trackDuration(inputStreamStats,
             ACTION_FILE_OPENED.getSymbol(), () ->
@@ -1952,6 +1956,10 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
     LOG.debug("Opening '{}'", readContext);
 
     if (this.analyticsAcceleratorEnabled) {
+      S3SdkObjectClient xyz = (S3SdkObjectClient)s3SeekableInputStreamFactory.getObjectClient();
+      ActiveAuditManagerS3A.WrappingAuditSpan wrappingAuditSpan = (ActiveAuditManagerS3A.WrappingAuditSpan) auditSpan;
+      LoggingAuditor.LoggingAuditSpan loggingAuditSpan = (LoggingAuditor.LoggingAuditSpan) wrappingAuditSpan.getSpan();
+      xyz.auditHeaders = new S3AAuditHeaders(loggingAuditSpan.getReferrer());
       return new FSDataInputStream(
               new S3ASeekableStream(
                       this.bucket,

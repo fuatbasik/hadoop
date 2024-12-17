@@ -701,7 +701,7 @@ public final class ActiveAuditManagerS3A
    * Package-private for testing.
    */
   @VisibleForTesting
-  final class WrappingAuditSpan extends AbstractAuditSpanImpl {
+  public final class WrappingAuditSpan extends AbstractAuditSpanImpl {
 
     /**
      * Inner span.
@@ -797,8 +797,8 @@ public final class ActiveAuditManagerS3A
      * Get the inner span.
      * @return the span.
      */
-    @VisibleForTesting
-    AuditSpanS3A getSpan() {
+
+    public AuditSpanS3A getSpan() {
       return span;
     }
 
