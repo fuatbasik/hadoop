@@ -44,7 +44,8 @@ public class ITestS3AFileSystemStatistic extends AbstractS3ATestBase {
    */
   @Test
   public void testBytesReadWithStream() throws IOException {
-    // Assertions will fail as {@link S3ASeekableInputStream} do not support S3AFileSystemStatistics yes
+    // Assertions will fail as {@link S3ASeekableInputStream}
+    // do not support S3AFileSystemStatistics yet.
     skipIfAnalyticsAcceleratorEnabled(getConfiguration(),
         "S3SeekableStream does not support File System Statistics");
     S3AFileSystem fs = getFileSystem();

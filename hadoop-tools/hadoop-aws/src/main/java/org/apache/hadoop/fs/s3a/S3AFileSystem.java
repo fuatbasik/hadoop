@@ -708,7 +708,8 @@ public class S3AFileSystem extends FileSystem implements StreamCapabilities,
       this.analyticsAcceleratorEnabled =
           conf.getBoolean(ANALYTICS_ACCELERATOR_ENABLED_KEY, ANALYTICS_ACCELERATOR_ENABLED_DEFAULT);
       this.analyticsAcceleratorCRTEnabled =
-          conf.getBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED, ANALYTICS_ACCELERATOR_CRT_ENABLED_DEFAULT);
+          conf.getBoolean(ANALYTICS_ACCELERATOR_CRT_ENABLED,
+              ANALYTICS_ACCELERATOR_CRT_ENABLED_DEFAULT);
 
       this.isMultipartUploadEnabled = conf.getBoolean(MULTIPART_UPLOADS_ENABLED,
               DEFAULT_MULTIPART_UPLOAD_ENABLED);
