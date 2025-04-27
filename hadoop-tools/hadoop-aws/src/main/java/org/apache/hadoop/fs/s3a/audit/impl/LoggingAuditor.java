@@ -271,7 +271,7 @@ public class LoggingAuditor
    * it is private. This is not true, as it is subclassed in
    * the same file.
    */
-  private class LoggingAuditSpan extends AbstractAuditSpanImpl {
+  public class LoggingAuditSpan extends AbstractAuditSpanImpl {
 
     private final HttpReferrerAuditHeader referrer;
 
@@ -298,7 +298,7 @@ public class LoggingAuditor
 
     private final String description;
 
-    private LoggingAuditSpan(
+    public LoggingAuditSpan(
         final String spanId,
         final String operationName,
         final CommonAuditContext context,
@@ -456,7 +456,7 @@ public class LoggingAuditor
      * Get the referrer.
      * @return the referrer.
      */
-    private HttpReferrerAuditHeader getReferrer() {
+    public HttpReferrerAuditHeader getReferrer() {
       return referrer;
     }
 
